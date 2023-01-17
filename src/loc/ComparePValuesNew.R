@@ -180,6 +180,7 @@ legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000
 
 cladeCorrelationFile = readRDS("Data/carnvHerbsCladesCOrrelationFile.rds")
 
+#p.adj
 plot(newCorrelationFile$p.adj, cladeCorrelationFile$p.adj)
 styleplot(newCorrelationFile$p.adj, cladeCorrelationFile$p.adj, "CarnvHerb Clades vs non-clades non-permulated p-values")
 Top1000GenesInCommon = length(which(rownames(newCorrelationFile[order(newCorrelationFile$p.adj),])[1:1000] %in% rownames(newCorrelationFile[order(newCorrelationFile$p.adj),])[1:1000]))
@@ -190,9 +191,91 @@ styleplot(cladeCorrelationFile$p.adj, carnvHerbsPreviousAnalysisData$p.adj, "Car
 Top1000GenesInCommon = length(which(rownames(newCorrelationFile[order(cladeCorrelationFile$p.adj),])[1:1000] %in% carnvHerbsPreviousAnalysisData[order(carnvHerbsPreviousAnalysisData$p.adj),]$X[1:1000]))
 legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
 
+plot(newCorrelationFile$p.adj, carnvHerbsPreviousAnalysisData$p.adj)
+styleplot(newCorrelationFile$p.adj, carnvHerbsPreviousAnalysisData$p.adj, "New Non-clade-based vs old non-permulated p-values")
+Top1000GenesInCommon = length(which(rownames(newCorrelationFile[order(newCorrelationFile$p.adj),])[1:1000] %in% carnvHerbsPreviousAnalysisData[order(carnvHerbsPreviousAnalysisData$p.adj),]$X[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+#P
+plot(newCorrelationFile$P, cladeCorrelationFile$P)
+styleplot(newCorrelationFile$P, cladeCorrelationFile$P, "CarnvHerb Clades vs non-clades non-permulated p-values")
+Top1000GenesInCommon = length(which(rownames(newCorrelationFile[order(newCorrelationFile$P),])[1:1000] %in% rownames(newCorrelationFile[order(newCorrelationFile$P),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+plot(cladeCorrelationFile$P, carnvHerbsPreviousAnalysisData$P)
+styleplot(cladeCorrelationFile$P, carnvHerbsPreviousAnalysisData$P, "CarnvHerb clade-based vs old non-permulated p-values")
+Top1000GenesInCommon = length(which(rownames(newCorrelationFile[order(cladeCorrelationFile$P),])[1:1000] %in% carnvHerbsPreviousAnalysisData[order(carnvHerbsPreviousAnalysisData$P),]$X[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+plot(newCorrelationFile$P, carnvHerbsPreviousAnalysisData$P)
+styleplot(newCorrelationFile$P, carnvHerbsPreviousAnalysisData$p.adj, "New Non-clade-based vs old non-permulated p-values")
+Top1000GenesInCommon = length(which(rownames(newCorrelationFile[order(newCorrelationFile$P),])[1:1000] %in% carnvHerbsPreviousAnalysisData[order(carnvHerbsPreviousAnalysisData$P),]$X[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
 
 
 # --- Output a file of the old test statistics 
 oldTestStats = carnvHerbsPreviousAnalysisData[,c(2,3,4,5)]
 rownames(oldTestStats) = carnvHerbsPreviousAnalysisData$X
 saveRDS(oldTestStats, "Output/carnvHerbsOldCorrelationValuesFile.rds")
+
+
+# -- Load in Non-clades permulation P Values
+
+carnvHerbsNonCladePValues = readRDS("Data/pValues/carnvHerbsNonCladesPermulationsPValue.rds")
+carnvHerbsNonCladePValues = carnvHerbsNonCladePValues[1:16208] #Remove duplicate BCAR1
+
+carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$defaultPosition),]
+carnvHerbsDF$NoncladesPermulationsPValue = carnvHerbsNonCladePValues
+
+carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$NoncladesPermulationsPValue),]
+carnvHerbsDF$nonCladesRank = 1:nrow(carnvHerbsDF)
+
+carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$defaultPosition),]
+
+# -- Compare Non-clades with other data by rank 
+#Laura-only clades
+plot(carnvHerbsDF$lauraOnlyRank, carnvHerbsDF$nonCladesRank)
+styleplot(carnvHerbsDF$lauraOnlyRank, carnvHerbsDF$nonCladesRank, "CarnvHerb New vs Non-Clades Rank")
+Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$lauraOnlyRank),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$nonCladesRank),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+#Previous analysis
+plot(carnvHerbsDF$previousAnalysisRank, carnvHerbsDF$nonCladesRank)
+styleplot(carnvHerbsDF$previousAnalysisRank, carnvHerbsDF$nonCladesRank, "CarnvHerb Old analysis vs Non-Clades Rank")
+Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$previousAnalysisRank),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$nonCladesRank),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+# -- Compare Non-clades with other data by p Value
+
+plot(carnvHerbsDF$lauraOnlyPValue, carnvHerbsDF$NoncladesPermulationsPValue)
+styleplot(carnvHerbsDF$lauraOnlyPValue, carnvHerbsDF$NoncladesPermulationsPValue, "CarnvHerb New vs Non-Clades pValue")
+Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$lauraOnlyPValue),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$NoncladesPermulationsPValue),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+plot(carnvHerbsDF$previousAnalysisPValue, carnvHerbsDF$NoncladesPermulationsPValue)
+styleplot(carnvHerbsDF$previousAnalysisPValue, carnvHerbsDF$NoncladesPermulationsPValue, "CarnvHerb NOld Analysis vs Non-Clades pValue")
+Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$previousAnalysisPValue),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$NoncladesPermulationsPValue),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+
+
+# --- Get overlapping top genes ------
+
+carnvHerbsDFByClades = carnvHerbsDF[order(carnvHerbsDF$lauraOnlyRank),]
+carnvHerbsDFByNonClades = carnvHerbsDF[order(carnvHerbsDF$nonCladesRank),]
+carnvHerbsDFByOld= carnvHerbsDF[order(carnvHerbsDF$previousAnalysisRank),]
+
+numberOfTop100GeneOverlap = length(which(rownames(carnvHerbsDFByClades)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100]))
+top100GeneOverlap = rownames(carnvHerbsDFByClades)[which(rownames(carnvHerbsDFByClades)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100])]
+
+carnvHerbsDFByClades[which(rownames(carnvHerbsDFByClades)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100]),]
+
+numberOfNCTop100GeneOverlap = length(which(rownames(carnvHerbsDFByOld)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100]))
+top100NCGeneOverlap = rownames(carnvHerbsDFByOld)[which(rownames(carnvHerbsDFByOld)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100])]
+
+numberOfNCTop1000GeneOverlap = length(which(rownames(carnvHerbsDFByOld)[1:1000] %in% rownames(carnvHerbsDFByNonClades)[1:1000]))
+top1000NCGeneOverlap = rownames(carnvHerbsDFByOld)[which(rownames(carnvHerbsDFByOld)[1:1000] %in% rownames(carnvHerbsDFByNonClades)[1:1000])]
+top1000NCGeneOverlap
+nonTop1000Genes = which(!rownames(carnvHerbsDFByOld) %in% top1000NCGeneOverlap)
+write(paste(top1000NCGeneOverlap, sep = "\n"), "Output/carnvHerbsGenenames.txt")
+write(paste(top1000NCGeneOverlap, sep = "\n"), "Output/carnvHerbsBackgroundGenes.txt")
