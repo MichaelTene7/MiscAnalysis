@@ -67,6 +67,7 @@ styledplot(insectivoryDF$missingSpeciesRank, insectivoryDF$defaultPosition, "Ins
 carnvHerbsLauraOnlyTreePValue = readRDS("Data/pValues/carnvHerbsLauraOnlyTreePermulationPValues.rds")
 carnvHerbsNonLauraTreePValue = readRDS("Data/pValues/carnvHerbsNonLauraTreePermulationPValues.rds")
 carnvHerbsSisterListPValue = readRDS("Data/pValues/carnvHerbsSisterlistPermulationPValues.rds")
+carnvHerbOldCorrelationNewPermulationPValue = readRDS("Data/pValues/carnvHerbsOldStatsNewAnalysisPermulationPValues.rds")
 
 carnvHerbsPreviousAnalysisData = read.csv("Data/pValues/CorrelationFishCarnHerbLaurasiatheria_wminsp_wnopermp_wcount_waddlperms0907.csv")
 carnvHerbsPreviousAnalysisPValue = carnvHerbsPreviousAnalysisData$permp.2sided
@@ -80,6 +81,7 @@ carnvHerbsNonLauraTreePValue = carnvHerbsNonLauraTreePValue[1:16208] #Remove dup
 carnvHerbsSisterListPValue = carnvHerbsSisterListPValue[1:16208] #Remove duplicate BCAR1
 carnvHerbsPreviousAnalysisPValue = carnvHerbsPreviousAnalysisPValue[1:16208] #Remove duplicate BCAR1
 carnvHerbsPreviousAnalysisPValueOneSide = carnvHerbsPreviousAnalysisPValueOneSide[1:16208]
+carnvHerbOldCorrelationNewPermulationPValue = carnvHerbOldCorrelationNewPermulationPValue[1:16208]
 
 #format as dataframe
 carnvHerbsDF = data.frame(carnvHerbsLauraOnlyTreePValue)
@@ -92,6 +94,7 @@ carnvHerbsDF$nonLauraPValue = carnvHerbsNonLauraTreePValue
 carnvHerbsDF$sisterListPValue = carnvHerbsSisterListPValue
 carnvHerbsDF$previousAnalysisPValue = carnvHerbsPreviousAnalysisPValue
 carnvHerbsDF$previousAnalysisPValueOneSide = carnvHerbsPreviousAnalysisPValueOneSide
+carnvHerbsDF$oldCorrelationNewPermulationPValue = carnvHerbOldCorrelationNewPermulationPValue
 
 carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$lauraOnlyPValue),]
 carnvHerbsDF$lauraOnlyRank = 1:nrow(carnvHerbsDF)
@@ -103,10 +106,13 @@ carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$previousAnalysisPValue),]
 carnvHerbsDF$previousAnalysisRank = 1:nrow(carnvHerbsDF)
 carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$previousAnalysisPValueOneSide),]
 carnvHerbsDF$previousAnalysisOneSideRank = 1:nrow(carnvHerbsDF)
+carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$oldCorrelationNewPermulationPValue),]
+carnvHerbsDF$OldCorellationRank = 1:nrow(carnvHerbsDF)
 
 carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$defaultPosition),]
 
 # -- Compare data by rank -- 
+{
 plot(carnvHerbsDF$lauraOnlyRank, carnvHerbsDF$previousAnalysisRank)
 styleplot(carnvHerbsDF$lauraOnlyRank, carnvHerbsDF$previousAnalysisRank, "CarnvHerb New vs Old Analysis Rank")
 Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$lauraOnlyRank),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$previousAnalysisRank),])[1:1000]))
@@ -162,7 +168,7 @@ plot(carnvHerbsDF$nonLauraPValue, carnvHerbsDF$sisterListPValue)
 styleplot(carnvHerbsDF$nonLauraPValue, carnvHerbsDF$sisterListPValue, "CarnvHerb Non-Laura vs Sisterlist pValue")
 Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$nonLauraPValue),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$sisterListPValue),])[1:1000]))
 legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
-
+}
 
 # --- Compare non-permulated p Values ---
 
@@ -214,10 +220,20 @@ legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000
 
 
 
+
+
 # --- Output a file of the old test statistics 
 oldTestStats = carnvHerbsPreviousAnalysisData[,c(2,3,4,5)]
 rownames(oldTestStats) = carnvHerbsPreviousAnalysisData$X
 saveRDS(oldTestStats, "Output/carnvHerbsOldCorrelationValuesFile.rds")
+
+carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$defaultPosition),]
+carnvHerbsDF$oldStatep = carnvHerbsNonLauraTreePValue
+
+carnvHerbsDF = carnvHerbsDF[order(carnvHerbsDF$lauraOnlyPValue),]
+carnvHerbsDF$lauraOnlyRank = 1:nrow(carnvHerbsDF)
+
+
 
 
 # -- Load in Non-clades permulation P Values
@@ -259,11 +275,32 @@ legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000
 
 
 
+#Compare old correlation statistic new analysis to other data
+#by rank
+plot(carnvHerbsDF$previousAnalysisRank, carnvHerbsDF$OldCorellationRank)
+styleplot(carnvHerbsDF$previousAnalysisRank, carnvHerbsDF$OldCorellationRank, "New vs Old Analysis on old correlation statistics by Rank")
+Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$previousAnalysisRank),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$OldCorellationRank),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+#by p Value
+plot(carnvHerbsDF$previousAnalysisPValue, carnvHerbsDF$oldCorrelationNewPermulationPValue)
+styleplot(carnvHerbsDF$previousAnalysisPValue, carnvHerbsDF$oldCorrelationNewPermulationPValue, "New vs Old Analysis on old correlation statistics by pValue")
+Top1000GenesInCommon = length(which(rownames(carnvHerbsDF[order(carnvHerbsDF$previousAnalysisPValue),])[1:1000] %in% rownames(carnvHerbsDF[order(carnvHerbsDF$oldCorrelationNewPermulationPValue),])[1:1000]))
+legend("bottomright", bty="n", legend=paste("Top 1000 genes in common:", Top1000GenesInCommon), text.col = 'blue4')
+
+
+
+
+
+
+
 # --- Get overlapping top genes ------
 
 carnvHerbsDFByClades = carnvHerbsDF[order(carnvHerbsDF$lauraOnlyRank),]
 carnvHerbsDFByNonClades = carnvHerbsDF[order(carnvHerbsDF$nonCladesRank),]
 carnvHerbsDFByOld= carnvHerbsDF[order(carnvHerbsDF$previousAnalysisRank),]
+carnvHerbsDFByOldOneSided= carnvHerbsDF[order(carnvHerbsDF$previousAnalysisOneSideRank),]
+
 
 numberOfTop100GeneOverlap = length(which(rownames(carnvHerbsDFByClades)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100]))
 top100GeneOverlap = rownames(carnvHerbsDFByClades)[which(rownames(carnvHerbsDFByClades)[1:100] %in% rownames(carnvHerbsDFByNonClades)[1:100])]
@@ -278,4 +315,123 @@ top1000NCGeneOverlap = rownames(carnvHerbsDFByOld)[which(rownames(carnvHerbsDFBy
 top1000NCGeneOverlap
 nonTop1000Genes = which(!rownames(carnvHerbsDFByOld) %in% top1000NCGeneOverlap)
 write(paste(top1000NCGeneOverlap, sep = "\n"), "Output/carnvHerbsGenenames.txt")
-write(paste(top1000NCGeneOverlap, sep = "\n"), "Output/carnvHerbsBackgroundGenes.txt")
+write(paste(nonTop1000Genes, sep = "\n"), "Output/carnvHerbsBackgroundGenes.txt")
+
+#direct ranked list 
+rownames(carnvHerbsDFByNonClades)
+write(paste(rownames(carnvHerbsDFByNonClades), sep = "\n"), "Output/carnvHerbsRankedNewGenes.txt")
+write(paste(rownames(carnvHerbsDFByOld), sep = "\n"), "Output/carnvHerbsRankedOld2SidedGenes.txt")
+write(paste(rownames(carnvHerbsDFByOldOneSided), sep = "\n"), "Output/carnvHerbsRankedOld1SidedGenes.txt")
+
+#shorter foreground-background list 
+numberOfNCTop200GeneOverlap = length(which(rownames(carnvHerbsDFByOld)[1:200] %in% rownames(carnvHerbsDFByNonClades)[1:200]))
+top200NCGeneOverlap = rownames(carnvHerbsDFByOld)[which(rownames(carnvHerbsDFByOld)[1:200] %in% rownames(carnvHerbsDFByNonClades)[1:200])]
+length(top200NCGeneOverlap)
+nonTop200Genes = rownames(carnvHerbsDFByOld)[which(!rownames(carnvHerbsDFByOld) %in% top200NCGeneOverlap)]
+
+write(paste(top200NCGeneOverlap, sep = "\n"), "Output/carnvHerbsTop200FGGene.txt")
+write(paste(nonTop200Genes, sep = "\n"), "Output/carnvHerbsTop200BGGenes.txt")
+
+
+# ---- Generate sign-based ranking of genes 
+
+# Sort by the non-permulated p value
+sortableNonCladeTestStats$permPVal = readRDS("Data/pValues/carnvHerbsNonCladesPermulationsPValue.rds")
+sortableNonCladeTestStats$DefaultOrder = 1:nrow(sortableNonCladeTestStats)
+
+#Compare the permulated andn non-permulated results: 
+plot(NoPermTestStatsBySign$p.adj, NoPermTestStatsBySign$permPVal)
+styleplot(NoPermTestStatsBySign$p.adj, NoPermTestStatsBySign$permPVal, "perm vs non-perm new data")
+
+sortableNonCladeTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$p.adj),]
+sortableNonCladeTestStats$nonPermRank = 1:nrow(sortableNonCladeTestStats)
+sortableNonCladeTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$permPVal),]
+sortableNonCladeTestStats$PermRank = 1:nrow(sortableNonCladeTestStats)
+sortableNonCladeTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$DefaultOrder),]
+
+plot(sortableNonCladeTestStats$p.adj, sortableNonCladeTestStats$permPVal)
+styleplot(sortableNonCladeTestStats$p.adj, sortableNonCladeTestStats$permPVal, "perm vs non-perm new data")
+
+plot(sortableNonCladeTestStats$nonPermRank, sortableNonCladeTestStats$PermRank)
+styleplot(sortableNonCladeTestStats$nonPermRank, sortableNonCladeTestStats$PermRank, "perm vs non-perm new data Rank ")
+
+
+negativePNoPermTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$p.adj),]
+negativePNoPermTestStats = negativePNoPermTestStats[which(negativePNoPermTestStats$Rho < 0), ]
+
+positivePNoPermTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$p.adj, decreasing = T),]
+positivePNoPermTestStats = positivePNoPermTestStats[which(positivePNoPermTestStats$Rho > 0), ]
+
+NoPermTestStatsBySign = rbind(negativePNoPermTestStats, positivePNoPermTestStats)
+
+plot(NoPermTestStatsBySign$Rho)
+
+write(paste(rownames(NoPermTestStatsBySign), sep = "\n"), "Output/carnvHerbsNoPermGenesRankedBySign.txt")
+
+NoPermTestStatsBySignPositiveTop = NoPermTestStatsBySign[nrow(NoPermTestStatsBySign):1,]
+NonCladeTestStatsBySignPositiveTop[14967,]
+
+
+write(paste(rownames(NoPermTestStatsBySignPositiveTop), sep = "\n"), "Output/carnvHerbsNoPermGenesRankedBySignPositiveTop.txt")
+
+
+
+
+# generate one direction only result tables
+
+sortableNonCladeTestStats = newCorrelationFile
+
+sortableNonCladeTestStats$permPVal = readRDS("Data/pValues/carnvHerbsNonCladesPermulationsPValue.rds")
+sortableNonCladeTestStats$DefaultOrder = 1:nrow(sortableNonCladeTestStats)
+
+negativePNonCladeTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$permPVal),]
+negativePNonCladeTestStats = negativePNonCladeTestStats[which(negativePNonCladeTestStats$Rho < 0), ]
+
+positivePNonCladeTestStats = sortableNonCladeTestStats[order(sortableNonCladeTestStats$permPVal, decreasing = T),]
+positivePNonCladeTestStats = positivePNonCladeTestStats[which(positivePNonCladeTestStats$Rho > 0), ]
+
+NonCladeTestStatsBySign = rbind(negativePNonCladeTestStats, positivePNonCladeTestStats)
+
+plot(NonCladeTestStatsBySign$Rho)
+
+write(paste(rownames(NonCladeTestStatsBySign), sep = "\n"), "Output/carnvHerbsNonCladesGenesRankedBySign.txt")
+
+NonCladeTestStatsBySignPositiveTop = NonCladeTestStatsBySign[nrow(NonCladeTestStatsBySign):1,]
+NonCladeTestStatsBySignPositiveTop[14967,]
+
+
+write(paste(rownames(NonCladeTestStatsBySignPositiveTop), sep = "\n"), "Output/carnvHerbsNonCladesGenesRankedBySignPositiveTop.txt")
+
+
+#compare perm effects
+all.equal(negativePNoPermTestStats, negativePNonCladeTestStats)
+all.equal(positivePNoPermTestStats, positivePNonCladeTestStats)
+all.equal(NoPermTestStatsBySignPositiveTop, NonCladeTestStatsBySignPositiveTop)
+all.equal(NoPermTestStatsBySign, NonCladeTestStatsBySign )
+
+positivePPermEffectTest = positivePNoPermTestStats
+positivePPermEffectTest = positivePPermEffectTest[order(positivePPermEffectTest$p.adj),]
+positivePPermEffectTest$nonPermRankPostive = 1:nrow(positivePPermEffectTest)
+positivePPermEffectTest = positivePPermEffectTest[order(positivePPermEffectTest$permPVal),]
+positivePPermEffectTest$PermRankPositve = 1:nrow(positivePPermEffectTest)
+positivePPermEffectTest = positivePPermEffectTest[order(positivePPermEffectTest$DefaultOrder),]
+
+plot(positivePPermEffectTest$nonPermRankPostive, positivePPermEffectTest$PermRankPositve)
+
+
+#-- try to figure out why dynein signal still present --
+
+#working with the old data
+
+carnvHerbsPreviousAnalysisData = read.csv("Data/pValues/CorrelationFishCarnHerbLaurasiatheria_wminsp_wnopermp_wcount_waddlperms0907.csv")
+carnvHerbsPreviousAnalysisDataNegative = carnvHerbsPreviousAnalysisData[which(carnvHerbsPreviousAnalysisData$RhoSign == "Rho_Negative"), ]
+carnvHerbsPreviousAnalysisDataPositive = carnvHerbsPreviousAnalysisData[which(carnvHerbsPreviousAnalysisData$RhoSign == "Rho_Positive"), ]
+
+previousAnalysisGenesRankedBySignPostiveTop = rbind(carnvHerbsPreviousAnalysisDataPositive[order(carnvHerbsPreviousAnalysisDataPositive$permp.2sided),], carnvHerbsPreviousAnalysisDataNegative[order(carnvHerbsPreviousAnalysisDataNegative$permp.2sided, decreasing =  T),])
+
+write(paste(previousAnalysisGenesRankedBySignPostiveTop$X, sep = "\n"), "Output/oldAnalysisGenesRankedBySignPositiveTop.txt")
+
+
+previousAnalysisGenesRankedBySignPostiveTop$X
+rownames(NonCladeTestStatsBySignPositiveTop)
+rownames(NoPermTestStatsBySignPositiveTop)
