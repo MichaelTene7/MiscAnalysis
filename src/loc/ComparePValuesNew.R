@@ -435,3 +435,6 @@ write(paste(previousAnalysisGenesRankedBySignPostiveTop$X, sep = "\n"), "Output/
 previousAnalysisGenesRankedBySignPostiveTop$X
 rownames(NonCladeTestStatsBySignPositiveTop)
 rownames(NoPermTestStatsBySignPositiveTop)
+
+#----- redo the new GO data to be clea 
+

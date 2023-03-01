@@ -72,3 +72,26 @@ plot(combinedAnalaysisDataNegativeMatching$p.adj, newAnalysisDataNegativeMatchin
 
 combinedAnalaysisDataNegative[order(combinedAnalaysisDataNegative[,18]),]$X
 combinedAnalaysisDataNegative[order(combinedAnalaysisDataNegative[,5]),]$X
+
+significantNewAnalysisDataNegative = newAnalysisDataNegative[newAnalysisDataNegative$p.adj <0.06,]
+permsignificantNewAnalysisDataNegative = newAnalysisDataNegative[newAnalysisDataNegative$permPValue <0.06,]
+
+newAnalysisDataPositive
+
+significantNewAnalysisDataPositive = newAnalysisDataPositive[newAnalysisDataPositive$p.adj <0.06,]
+permsignificantNewAnalysisDataPositive = newAnalysisDataPositive[newAnalysisDataPositive$permPValue <0.06,]
+
+dyneinGenes = c("DNAH17", "TEKT2","CCDC114","CCDC151" ,"TTC12","DRC1" ,"TTC25" ,"DAW1" ,"DNAI2" ,"CCDC65" ,"DNAH1" ,"ARMC4" ,"DNAH5" ,"DNAH7" ,"DNAI1" ,"SPAG1")
+
+dyneinGenes %in% rownames(significantNewAnalysisDataPositive)
+dyneinGenes %in% rownames(permsignificantNewAnalysisDataPositive)
+
+significantNewAnalysisDataPositive$p.adj[rownames(significantNewAnalysisDataPositive) %in% dyneinGenes]
+significantNewAnalysisDataPositive$permPValue[rownames(significantNewAnalysisDataPositive) %in% dyneinGenes]
+significantNewAnalysisDataPositive$sameSignPermPValue[rownames(significantNewAnalysisDataPositive) %in% dyneinGenes]
+
+significantOldAnalysisDataNegative = carnvHerbsPreviousAnalysisDataNegative[carnvHerbsPreviousAnalysisDataNegative$p.adj <0.06,]
+permsignificantOldAnalysisDataNegative = carnvHerbsPreviousAnalysisDataNegative[carnvHerbsPreviousAnalysisDataNegative$permp.2sided <0.06,]
+
+dyneinGenes %in% significantOldAnalysisDataNegative$X
+dyneinGenes %in% permsignificantOldAnalysisDataNegative$X
