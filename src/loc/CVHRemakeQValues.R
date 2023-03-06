@@ -1,7 +1,8 @@
 library(qvalue)
+library(RERconverge)
 
 CVHCorrelationFile = readRDS("Data/CVHRemakeCorrelationFile.rds")
-CVHData = newCorrelationFile
+CVHData = CVHCorrelationFile
 CVHData$permPValue = readRDS("Data/CVHRemakeCombinedPrunedFastAllPermulationsPValue.rds")
 
 str(CVHData$permPValue)
@@ -19,32 +20,46 @@ plot(CVHData$permPValue)
 simplePermQ = qvalue(p = CVHData$permPValue)
 CVHData$simplePermQVal = simplePermQ$qvalues
 
-CVHDataPositive = CVHData[which(newAnalysisData$Rho > 0),]
-CVHDataNegative = CVHData[which(newAnalysisData$Rho < 0),]
+CVHDataPositive = CVHData[which(CVHData$Rho > 0),]
+CVHDataNegative = CVHData[which(CVHData$Rho < 0),]
 
 plot(CVHDataPositive$permPValue)
 plot(CVHDataNegative$permPValue)
+hist(CVHDataPositive$permPValue, breaks = 40, xaxp = c(0,1,20))
+hist(CVHDataNegative$permPValue, breaks = 40, xaxp = c(0,1,20))
+
+hist(CVHDataPositive$p.adj, breaks = 40, xaxp = c(0,1,20))
+hist(CVHDataNegative$p.adj, breaks = 40, xaxp = c(0,1,20))
 
 # -- order by q values 
 CVHData[order(CVHData$simplePermQVal),]
-
+range(CVHData$simplePermQVal, na.rm = T)
 
 # -- plot q values -- 
 hist(CVHData$simplePermQVal, breaks = 40, xaxp = c(0,1,20))
 
 hist(CVHData$simplePermQVal, breaks = 40, xaxp = c(0,1,20), ylim = c(0,100))
 
-
-par(mfrow = c(1,1))
-hist(newAnalysisData$cladeBasedQVal, breaks = 40, xaxp = c(0,1,20))
-newAnalysisDataLowQ = newAnalysisData[which(newAnalysisData$cladeBasedQVal <0.9),]
-hist(newAnalysisDataLowQ$cladeBasedQVal, breaks = 40, xaxp = c(0,1,20))
+genesRankedPermP = rownames(CVHData[order(CVHData$permPValue),])
+write(genesRankedPermP, "Output/NewCVHRankedPermGenes.txt")
 
 # -- number of q values <0.05
-newAnalysisDataVeryLowQ = newAnalysisData[which(newAnalysisData$sameSignQVal < 0.05),]
-length(which(newAnalysisData$cladeBasedQVal < 0.05))
-length(which(newAnalysisDataNegative$cladeBasedQVal < 0.05))
-length(which(newAnalysisDataPositive$cladeBasedQVal < 0.05))
+CVHDataVeryLowQ = CVHData[which(CVHData$simplePermQVal < 0.05),]
+length(which(CVHData$simplePermQVal < 0.05))
+
+
+#plot RERs
+RERFile = readRDS("Data/CVHRemakeRERFile.rds")
+PathsFile = readRDS("Data/CVHRemakePathsFile.rds")
+plotRers(RERFile, "AC010255", PathsFile)
+for(i in 1:100){
+  plotRers(RERFile, genesRankedPermP[i], PathsFile)
+  message(i)
+  Sys.sleep(4)
+}
+#
+
+
 
 
 # -- plot the p and q values -- 
