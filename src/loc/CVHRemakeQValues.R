@@ -1,5 +1,6 @@
 library(qvalue)
 library(RERconverge)
+library(dprint)
 
 CVHCorrelationFile = readRDS("Data/CVHRemakeCorrelationFile.rds")
 CVHData = CVHCorrelationFile
@@ -100,6 +101,13 @@ abline(fit <- lm(CVHData$permPValueSameSign ~ CVHData$permPValueAllSign), col='r
 legend("topleft", bty="n", legend=paste("R2 is", format(summary(fit)$adj.r.squared, digits=12)), text.col = 'blue')
 
 
+printTest = head(CVHData[order(CVHData$allSignPermQ),], n=40)
+sinkplot()
+printTest
+sinkplot("plot")
+sinkplot("cancel")
+
+?dprint()
 
 # -----
 #plot RERs
