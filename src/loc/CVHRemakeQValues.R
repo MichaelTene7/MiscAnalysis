@@ -53,10 +53,8 @@ length(which(CVHData$sameSignPermQ < 0.05))
 
 # ---- All sign version ----
 # -------------------------
-
-# ---- Same sign version --- 
 allSignPermQ = qvalue(p = CVHData$permPValueAllSign)
-CVHData$permPValueAllSign = allSignPermQ$qvalues
+CVHData$allSignPermQVal = allSignPermQ$qvalues
 
 CVHDataPositive = CVHData[which(CVHData$Rho > 0),]
 CVHDataNegative = CVHData[which(CVHData$Rho < 0),]
@@ -86,10 +84,24 @@ CVHDataVeryLowQ = CVHData[which(CVHData$allSignPermQ < 0.05),]
 length(which(CVHData$allSignPermQ < 0.05))
 
 
+# ---- Compare Same and All sign ---
+# --------------------------------
+par(mfrow = c(1,2))
+
+hist(CVHDataPositive$permPValueSameSign, breaks = 40, xaxp = c(0,1,20))
+hist(CVHDataPositive$permPValueAllSign, breaks = 40, xaxp = c(0,1,20))
+
+hist(CVHDataNegative$permPValueSameSign, breaks = 40, xaxp = c(0,1,20))
+hist(CVHDataNegative$permPValueAllSign, breaks = 40, xaxp = c(0,1,20))
+
+par(mfrow = c(1,1))
+plot(CVHData$permPValueSameSign, CVHData$permPValueAllSign)
+abline(fit <- lm(CVHData$permPValueSameSign ~ CVHData$permPValueAllSign), col='red')
+legend("topleft", bty="n", legend=paste("R2 is", format(summary(fit)$adj.r.squared, digits=12)), text.col = 'blue')
 
 
 
-
+# -----
 #plot RERs
 RERFile = readRDS("Data/CVHRemakeRERFile.rds")
 PathsFile = readRDS("Data/CVHRemakePathsFile.rds")
