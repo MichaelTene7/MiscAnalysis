@@ -2,7 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
-
 /data
 /results
 ProjectFrameworkPreGitted.Rproj
+CategoricalPermulationsTimes.rds
+CategoricalPermulationsTimingTrees.rds
+ToMatthew.zip
+mergeExample
+mergeExample.zip
