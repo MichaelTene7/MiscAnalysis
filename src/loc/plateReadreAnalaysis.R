@@ -86,3 +86,4 @@ combinedPlot(sevenAndEight)
 
 notSevenAndEight = names(meanData3)[-c(grep(7, names(meanData3)), grep(8, names(meanData3)),1)]
 combinedPlot(notSevenAndEight)
+
