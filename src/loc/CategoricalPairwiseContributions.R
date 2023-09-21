@@ -1,0 +1,1 @@
+3phenCorrelation= readRDS("Data/CategoricalPairwiseContributions/CategoricalDiet3PhenCorrelationFile.rds")
