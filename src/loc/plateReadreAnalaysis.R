@@ -1,5 +1,6 @@
 library(ggplot2)
 library(gridExtra)
+library(growthcurver)
 
 # -- read the data --
 inData = mainData = read.csv("Data/PlateReader/second2490-3CompareClean.csv")
@@ -9,7 +10,7 @@ inData = mainData = read.csv("Data/PlateReader/third2490-3CompareClean.csv")
 # -- clean the data -- #
 timeData = mainData[which(mainData[1] == "Time [s]"),]
 timeData = timeData[1,]
-rownames(timeData)= "Time"
+rownames(timeData)= "time"
 timeData = timeData[,-1]
 
 meanData = mainData[which(mainData[1] == "Mean"),]
@@ -120,6 +121,11 @@ grid.arrange(csm2490plot, csm2492plot, csm2491plot, csm2493plot, ncol = 2)
 
 #
 
+# -- get growthcurver results for the plate -- 
+cleanData$time = cleanData$time/60/60
+
+growthcurverOutput = SummarizeGrowthByPlate(cleanData, plot_fit = TRUE, plot_file = "Output/GrowthCurves/YeastStrains.pdf")
+write.csv(growthcurverOutput, "Output/GrowthCurves/yeastStrains.csv")
 
 
 
@@ -140,9 +146,7 @@ grid.arrange(csm2490plot, csm2492plot, csm2491plot, csm2493plot, ncol = 2)
 
 
 
-
-
-# -------------------- #
+# --------- old code ----------- #
 mainData = read.csv("Data/PlateReader/Intial2490-3CompareClean.csv")
 mainData[4,]
 
