@@ -8,7 +8,10 @@ CVHCat = readRDS("Data/CompareAnalysisTypes/CategoricalDiet3PhenCarnivore-Herbiv
 CVOCat = readRDS("Data/CompareAnalysisTypes/CategoricalDiet3Phen_Omnivore-CarnivorePermulationsCorrelationFile.rds")
 OVHCat = readRDS("Data/CompareAnalysisTypes/CategoricalDiet3Phen_Omnivore-HerbivorePermulationsCorrelationFile.rds")
 CVHBin = readRDS("Data/CompareAnalysisTypes/CVHRemakeCorrelationsFilePermulated.rds"); CVHBin = CVHBin[,c(1,3:5)]
-CVhBinAtA = readRDS("Data/CompareAnalysisTypes/BinaryCVHApplesToApplesCorrelationFile.rds")
+
+CVhBinAtAReadIn = readRDS("Data/CompareAnalysisTypes/BinaryCVHApplesToApplesCorrelationFile.rds")
+CVhBinAtAPerms = readRDS("Data/BinaryCVHApplesToApplesCombinedPrunedFastAppendedPermulationsPValue.rds")
+CVhBinAtA = cbind(CVhBinAtAReadIn[c(1,3,4)], CVhBinAtAPerms); names(CVhBinAtA)[4] = "permPValue"
 
 CVHTree = readRDS("Data/CompareAnalysisTypes/CVHRemakeBinaryForegroundTree.rds")
 Cat3Tree = readRDS("Data/CompareAnalysisTypes/CategoricalDiet3PhenCategoricalTree.rds")
@@ -323,6 +326,59 @@ d2hist2("NarrowBinary", "WideBinary")
 d2hist2("NarrowBinary", "Categorical")
 d2hist2("WideBinary", "Categorical")
 
+
+# -- Compare width permulated --
+
+CompareWidthPerm = data.frame(CVHBin$permPValue, CVhBinAtA$permPValue, CVHCat$permP)
+colnames(CompareWidthPerm) = c("NarrowBinary", "WideBinary", "Categorical")
+
+x = "NarrowBinary"
+y = "WideBinary"
+
+lm_eqn <- function(df){
+  m <- lm(y ~ x, df);
+  eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+                   list(a = format(unname(coef(m)[1]), digits = 2),
+                        b = format(unname(coef(m)[2]), digits = 2),
+                        r2 = format(summary(m)$r.squared, digits = 3)))
+  as.character(as.expression(eq));
+}
+
+r2plotPerm = function(x,y, dataframe = CompareWidthPerm){
+  plot(dataframe[[str2lang(x)]], dataframe[[str2lang(y)]], xlab = str2lang(x), ylab = str2lang(y))
+  model = lm(eval(str2lang(x)) ~ eval(str2lang(y)), dataframe)
+  abline(model) 
+  legend("topleft",legend=paste("R2 is", format(summary(model)$r.squared,digits=3)))
+}
+
+d2hist2Perm = function(x,y){
+  ggplot(CompareWidthPerm, aes(x=eval(str2lang(x)), y=eval(str2lang(y))))+
+    geom_bin_2d()+
+    theme_bw()+
+    labs(x=x, y=y)
+}
+
+
+#CompareWidth$Categorical[which(CompareWidth$Categorical == 1)] = NA
+
+all.equal(rownames(CVHBin), rownames(CVHCat))
+all.equal(rownames(CVHBin), rownames(CVhBinAtA))
+plot(CompareWidth$WideBinary, CompareWidthPerm$WideBinary )
+
+
+plot(CompareWidthPerm$NarrowBinary, CompareWidthPerm$WideBinary )
+plot(CompareWidthPerm$Categorical, CompareWidthPerm$WideBinary )
+plot(CompareWidthPerm$Categorical, CompareWidthPerm$NarrowBinary )
+
+r2plotPerm("NarrowBinary", "WideBinary")
+r2plotPerm("NarrowBinary", "Categorical")
+r2plotPerm("WideBinary", "Categorical")
+
+
+
+d2hist2Perm("NarrowBinary", "WideBinary")
+d2hist2Perm("NarrowBinary", "Categorical")
+d2hist2Perm("WideBinary", "Categorical")
 
 
 
