@@ -10,7 +10,10 @@
 #treeToConvertLocation = "Data/CVHRemakeBinaryForegroundTree.rds"
 #inputTree = readRDS(treeToConvertLocation)
 
-ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv", hlcol = "blue", bgcol = "black", fontSize = 0.8){
+
+ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAnnotLocation = "Data/manualAnnotationsSheet.csv"){
+  library(RERconverge)
+
   
   manualAnnot = read.csv(manualAnnotLocation) 
   inputTree = tree
@@ -33,13 +36,16 @@ ZoonomTreeNameToCommon = function(tree, plot = T, isForegroundTree = T, manualAn
     if(isForegroundTree){
       readableTree = inputTree
       readableTree$edge.length[readableTree$edge.length == 0] = 1
+
       plotTreeHighlightBranches2(readableTree, hlspecies = which(inputTree$edge.length == 1), hlcols = hlcol, bgcol = bgcol, fontSize = fontSize)
+
     }else{
       plotTree(inputTree)
     }
   }
   return(inputTree)
 }
+
 
 plotTreeHighlightBranches2 =function (tree, outgroup = NULL, hlspecies, hlcols = NULL, main = "", 
           useGG = FALSE, bgcol = "black", fontSize =0.8) 
@@ -144,5 +150,6 @@ plotTreeHighlightBranches2 =function (tree, outgroup = NULL, hlspecies, hlcols =
     return(plotobj)
   }
 }
+
 
 
