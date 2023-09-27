@@ -5,6 +5,8 @@ library(growthcurver)
 # -- read the data --
 inData = mainData = read.csv("Data/PlateReader/second2490-3CompareClean.csv")
 inData = mainData = read.csv("Data/PlateReader/third2490-3CompareClean.csv")
+inData = mainData = read.csv("Data/PlateReader/lowQualityYeastCompare9-26Clean.csv")
+
 
 
 # -- clean the data -- #
@@ -80,7 +82,7 @@ names(cleanData) = wellNames
 # -- make plotting function ---
 
 combinedPlot = function(wells){
-  plot <- ggplot( aes(x=Time), data = cleanData)
+  plot <- ggplot( aes(x=time), data = cleanData)
   for (i in 1:length(wells)) { 
     loop_input = paste("geom_point(aes(y=",wells[i],",color='",wells[i],"'))", sep="")
     plot <- plot + eval(parse(text=loop_input))  
