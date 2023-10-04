@@ -80,7 +80,7 @@ names(cleanData) = wellNames
 # -- make plotting function ---
 
 combinedPlot = function(wells){
-  plot <- ggplot( aes(x=Time), data = cleanData)
+  plot <- ggplot( aes(x=time), data = cleanData)
   for (i in 1:length(wells)) { 
     loop_input = paste("geom_point(aes(y=",wells[i],",color='",wells[i],"'))", sep="")
     plot <- plot + eval(parse(text=loop_input))  
@@ -129,11 +129,31 @@ write.csv(growthcurverOutput, "Output/GrowthCurves/yeastStrains.csv")
 
 
 
+# -- Plot the grwoth rates -- 
+
+growthcurverOutput = read.csv("Output/GrowthCurves/yeastStrains.csv")
+
+growthRates = growthcurverOutput$r
+names(growthRates) = growthcurverOutput$sample
+
+growthcurverOutputPlot = growthcurverOutput
+growthcurverOutputPlot$r[growthcurverOutputPlot$r >1] =NA
+growthcurverOutputPlot$strain = growthcurverOutputPlot$sample
+
+growthcurverOutputPlot$strain[grep("2490", growthcurverOutputPlot$strain)] = "2490"
+growthcurverOutputPlot$strain[grep("2491", growthcurverOutputPlot$strain)] = "2491"
+growthcurverOutputPlot$strain[grep("2492", growthcurverOutputPlot$strain)] = "2492"
+growthcurverOutputPlot$strain[grep("2493", growthcurverOutputPlot$strain)] = "2493"
+
+grep("Mm", growthcurverOutputPlot$sample)
+growthcurverOutputPlotTrimmed = growthcurverOutputPlot[grep("Mm", growthcurverOutputPlot$sample),]
+growthcurverOutputPlotTrimmed = growthcurverOutputPlot[grep("Mm", growthcurverOutputPlot$sample),]
 
 
 
-
-
+ggplot(growthcurverOutputPlotTrimmed, aes(x= X, y= r, colour=strain, label=sample))+
+  geom_point()+
+  geom_text(hjust=0, vjust=0)
 
 
 
