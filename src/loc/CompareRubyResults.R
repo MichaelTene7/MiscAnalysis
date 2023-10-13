@@ -55,6 +55,49 @@ rubyMainTree = readRDS("Data/RubyData/mam120aa_trees.rds")
 rubyPhens = readRDS("Data/RubyData/binaryPhenotypes.rds")
 rubyPhensFinal = readRDS("Data/RubyData/dietPhensFinal.rds")
 
+length(rubyPhensFinal)
+myCategoricalPhenotypes = readRDS("Data/CategoricalPermulationsTimingHillerPhenotypes.rds")
+hillerConversionTable = readRDS("Data/HillerZoonomPhenotypeTable.rds")
+zoonmiaToHillerCodes = readRDS("Data/zoonomiaToHillerCodesTable.rds")
+
+mineNotRuby = myCategoricalPhenotypes[which(!names(myCategoricalPhenotypes) %in% names(rubyPhensFinal))]
+
+
+RubyNotMine = rubyPhensFinal[which(!names(rubyPhensFinal) %in% names(myCategoricalPhenotypes))]
+length(RubyNotMine)
+
+hillerNotRuby = zoonmiaToHillerCodes[which(!zoonmiaToHillerCodes$TipLabel %in% names(rubyPhensFinal)),]
+grep("HLmus", names(rubyPhensFinal))
+
+
+hillerConversionTable$common[which(hillerConversionTable$Hiller %in% names(mineNotRuby))]
+hillerConversionTable$Zoonomia[which(hillerConversionTable$Hiller %in% names(mineNotRuby))]
+hillerConversionTable$Hiller[which(hillerConversionTable$Hiller %in% names(mineNotRuby))]
+
+zoonmiaToHillerCodes$ScientificName[which(zoonmiaToHillerCodes$TipLabel %in% names(RubyNotMine))]
+hillerConversionTable$common[which(hillerConversionTable$Hiller %in% names(RubyNotMine))]
+hillerConversionTable$Zoonomia[which(hillerConversionTable$Hiller %in% names(RubyNotMine))]
+hillerConversionTable$Hiller[which(hillerConversionTable$Hiller %in% names(RubyNotMine))]
+
+names(myCategoricalPhenotypes)[58]
+
+names(rubyPhensFinal)[59]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 char2TreeCategorical(rubyPhensFinal, rubyMainTree, model = "ARD", plot = T)
 
 rubyPhensFinal = gsub("omnivore", "_Omnivore", rubyPhensFinal)
