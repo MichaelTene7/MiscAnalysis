@@ -80,12 +80,14 @@ names(cleanData) = wellNames
 # -- make plotting function ---
 
 combinedPlot = function(wells){
+  colorset = c("brown1", "blue", "chocolate1", "cadetblue")
   plot <- ggplot( aes(x=time), data = cleanData)
   for (i in 1:length(wells)) { 
     loop_input = paste("geom_point(aes(y=",wells[i],",color='",wells[i],"'))", sep="")
     plot <- plot + eval(parse(text=loop_input))  
   }
   plot <- plot + guides( color = guide_legend(title = "",) )
+  plot = plot + scale_color_manual(values = colorset)
   plot
 }
 
@@ -118,6 +120,19 @@ csm2492plot = combinedPlot(wells2492csm)
 csm2493plot = combinedPlot(wells2493csm)
 grid.arrange(csm2490plot, csm2492plot, csm2491plot, csm2493plot, ncol = 2)
 
+wellsASMm = wellNames[grepl("As_1", wellNames) & grepl("Mm", wellNames)]
+wellsGluMm = wellNames[grepl("Glu_1", wellNames) & grepl("Mm", wellNames)]
+wellsSerMm = wellNames[grepl("Ser_1", wellNames) & grepl("Mm", wellNames)]
+wellsThrMm = wellNames[grepl("Thr_1", wellNames) & grepl("Mm", wellNames)]
+wellsASMmPLot = combinedPlot(wellsASMm)
+wellsGluMmPlot = combinedPlot(wellsGluMm)
+wellsSerMmPlot = combinedPlot(wellsSerMm)
+wellsThrMmPlot = combinedPlot(wellsThrMm)
+grid.arrange(wellsASMmPLot, wellsGluMmPlot, wellsSerMmPlot, wellsThrMmPlot, ncol = 2)
+
+
+combinedPlot(c("Glu_1_Mm_2490","Glu_5_Mm_2490"))
+
 
 #
 
@@ -140,22 +155,53 @@ growthcurverOutputPlot = growthcurverOutput
 growthcurverOutputPlot$r[growthcurverOutputPlot$r >1] =NA
 growthcurverOutputPlot$strain = growthcurverOutputPlot$sample
 
-growthcurverOutputPlot$strain[grep("2490", growthcurverOutputPlot$strain)] = "2490"
-growthcurverOutputPlot$strain[grep("2491", growthcurverOutputPlot$strain)] = "2491"
-growthcurverOutputPlot$strain[grep("2492", growthcurverOutputPlot$strain)] = "2492"
-growthcurverOutputPlot$strain[grep("2493", growthcurverOutputPlot$strain)] = "2493"
+growthcurverOutputPlot$strain[grep("2490", growthcurverOutputPlot$sample)] = "2490"
+growthcurverOutputPlot$strain[grep("2491", growthcurverOutputPlot$sample)] = "2491"
+growthcurverOutputPlot$strain[grep("2492", growthcurverOutputPlot$sample)] = "2492"
+growthcurverOutputPlot$strain[grep("2493", growthcurverOutputPlot$sample)] = "2493"
+growthcurverOutputPlot$media = growthcurverOutputPlot$sample
+growthcurverOutputPlot$media[grep("As", growthcurverOutputPlot$sample)] = "As"
+growthcurverOutputPlot$media[grep("Glu", growthcurverOutputPlot$sample)] = "Glu"
+growthcurverOutputPlot$media[grep("Ser", growthcurverOutputPlot$sample)] = "Ser"
+growthcurverOutputPlot$media[grep("Thr", growthcurverOutputPlot$sample)] = "Thr"
+
+growthcurverOutputPlot$concentration = growthcurverOutputPlot$sample
+growthcurverOutputPlot$concentration[grep("_5", growthcurverOutputPlot$sample)] = "5%"
+growthcurverOutputPlot$concentration[grep("_1", growthcurverOutputPlot$sample)] = "1%"
+
 
 grep("Mm", growthcurverOutputPlot$sample)
 growthcurverOutputPlotTrimmed = growthcurverOutputPlot[grep("Mm", growthcurverOutputPlot$sample),]
-growthcurverOutputPlotTrimmed = growthcurverOutputPlot[grep("Mm", growthcurverOutputPlot$sample),]
+
+growthcurverOutputPlotTrimmed = growthcurverOutputPlotTrimmed[-grep("Ser_5", growthcurverOutputPlotTrimmed$sample),]
+growthcurverOutputPlotTrimmed = growthcurverOutputPlotTrimmed[-grep("Thr_5", growthcurverOutputPlotTrimmed$sample),]
+growthcurverOutputPlotTrimmed = growthcurverOutputPlotTrimmed[-grep("Glu_5", growthcurverOutputPlotTrimmed$sample),]
+growthcurverOutputPlotTrimmed = growthcurverOutputPlotTrimmed[-grep("AS_1", growthcurverOutputPlotTrimmed$sample),]
 
 
-
-ggplot(growthcurverOutputPlotTrimmed, aes(x= X, y= r, colour=strain, label=sample))+
+ggplot(growthcurverOutputPlotTrimmed, aes(x= strain, y= r, colour=strain, label=concentration))+
+  geom_point()+
+  geom_text(hjust=0, vjust=0)
+# 
+ggplot(growthcurverOutputPlotTrimmed, aes(x= strain, y= k, colour=media, label=concentration))+
   geom_point()+
   geom_text(hjust=0, vjust=0)
 
+#
 
+colorset = c("brown1", "blue", "chocolate1", "cadetblue")
+
+mediaK = ggplot(growthcurverOutputPlotTrimmed, aes(x= media, y= k, colour=strain, label=concentration))+
+  geom_point()+
+  geom_text(hjust=0, vjust=0)+
+  scale_color_manual(values = colorset)
+
+mediaR = ggplot(growthcurverOutputPlotTrimmed, aes(x= media, y= r, colour=strain, label=concentration))+
+  geom_point()+
+  geom_text(hjust=0, vjust=0)+
+  scale_color_manual(values = colorset)
+
+grid.arrange(mediaK, mediaR, ncol = 2)
 
 
 
