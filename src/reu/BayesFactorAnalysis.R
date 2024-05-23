@@ -22,7 +22,7 @@ calculateBayesFactor = function(mainTrees, RERObject, combinationTree, subclade1
   subclade2Path = tree2Paths(subclade2Tree, mainTrees)
   
   #make dataframe to store Bayes factors
-  allBayesFactors=data.frame(matrix(nrow=nrow(RERmat), ncol=3))
+  allBayesFactors=data.frame(matrix(nrow=nrow(RERObject), ncol=3))
   colnames(allBayesFactors)=c("Combination", subclade1Name, subclade2Name)
   rownames(allBayesFactors)=rownames(RERObject)
   
@@ -36,14 +36,14 @@ calculateBayesFactor = function(mainTrees, RERObject, combinationTree, subclade1
     allBayesFactors[i,1]=bf
     
     #subclade1
-    tempdf=data.frame(trait=subclade1Path, RER=newRERmat[i,])
+    tempdf=data.frame(trait=subclade1Path, RER=RERObject[i,])
     tempdf=na.omit(tempdf)
     bfmod=lmBF(trait~RER, data=tempdf)
     bf=as.numeric(extractBF(bfmod)[1])
     allBayesFactors[i,2]=bf 
     
     #subclade2
-    tempdf=data.frame(trait=subclade2Path, RER=newRERmat[i,])
+    tempdf=data.frame(trait=subclade2Path, RER=RERObject[i,])
     tempdf=na.omit(tempdf)
     bfmod=lmBF(trait~RER, data=tempdf)
     bf=as.numeric(extractBF(bfmod)[1])
