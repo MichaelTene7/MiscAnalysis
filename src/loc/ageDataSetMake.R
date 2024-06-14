@@ -127,3 +127,10 @@ cor(ageTable$MaturityPercentage, ageTable$ELL, use = "complete.obs")
 
 write.csv(ageTable, "Output/MaturityLifespanData.csv")
 saveRDS(ageTable, "Output/MaturityLifespanData.rds")
+
+
+
+# ----- Making the values into a vector for RERConverge ----
+
+
+ageData = readRDS("Output/MaturityLifespanData.rds")
