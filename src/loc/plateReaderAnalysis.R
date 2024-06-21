@@ -6,6 +6,7 @@ library(growthcurver)
 inData = mainData = read.csv("Data/PlateReader/second2490-3CompareClean.csv")
 inData = mainData = read.csv("Data/PlateReader/third2490-3CompareClean.csv")
 inData = mainData = read.csv("Data/PlateReader/lowQualityYeastCompare9-26Clean.csv")
+inData = mainData = read.csv("Data/PlateReader/11-2-completemetation.csv")
 
 
 
@@ -82,14 +83,14 @@ names(cleanData) = wellNames
 # -- make plotting function ---
 
 combinedPlot = function(wells){
-  colorset = c("brown1", "blue", "chocolate1", "cadetblue")
+  #colorset = c("brown1", "blue", "chocolate1", "cadetblue","brown1", "blue", "chocolate1", "cadetblue")
   plot <- ggplot( aes(x=time), data = cleanData)
   for (i in 1:length(wells)) { 
     loop_input = paste("geom_point(aes(y=",wells[i],",color='",wells[i],"'))", sep="")
     plot <- plot + eval(parse(text=loop_input))  
   }
   plot <- plot + guides( color = guide_legend(title = "",) )
-  plot = plot + scale_color_manual(values = colorset)
+  #plot = plot + scale_color_manual(values = colorset)
   plot
 }
 
@@ -97,6 +98,8 @@ combinedPlot = function(wells){
 # -- plot the data -- 
 #allWells = names(cleanData)
 #combinedPlot(allWells)
+combinedPlot(wellNames)
+
 
 wells2490 = wellNames[grep("2490", wellNames)]
 combinedPlot(wells2490)
