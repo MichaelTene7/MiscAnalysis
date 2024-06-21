@@ -2,39 +2,10 @@ library(tidyr)
 library(dplyr)
 library(tibble)
 
-hillerData = read.csv("Data/HIllerZoonomiaPhenotypeTable.csv")
-eltonTraits = read.table("Data/MamFuncDat.txt", sep = "\t", header = T)
-manualAnnots = read.csv("Data/manualAnnotationsSheet.csv")
-
-
-# -- Code to make the starter sheet -- 
-combinedData = manualAnnots[,c(3,2,3)]
-names(combinedData) = c("Scientific_Binomial", "CommonName", "ScientificNameFull")
-combinedData$Scientific_Binomial = gsub(" ", "_", combinedData$Scientific_Binomial)
-combinedData$Divider = rep("-")
-
-myVec = "This_is_a_test_vector"
-#This line of code replaces any characters after "<not '_'> + _ + <not '_'>" with blank space
-sub('^([^_]+_[^_]+).*', '\\1', myVec)
-
-combinedData$Scientific_Binomial = sub('^([^_]+_[^_]+).*', '\\1', combinedData$Scientific_Binomial)
-combinedData$Scientific_Binomial = tolower(combinedData$Scientific_Binomial)
-
-which(combinedData$Scientific_Binomial== "")
-combinedData = combinedData[-which(combinedData$Scientific_Binomial== ""), ]
-
-#write.csv(combinedData, "Results/MergedDataBase.csv")
-
 # ---- Code to add name values to the combinedData ---- 
 
 
 # -- sorting data function --
-dataSet = hillerData
-scientificNameColumn = "scientific"
-addNewSpecies = T
-mergedData = combinedData
-commonNameColumn = NA
-commonNameColumn = "Common.Name.or.Group"
 
 #This function takes the input  data, and then reorders it so that the rows match the species in the main data (including missing species).
 #It matches based on a cleaned version of the specified scientific name column. 
@@ -42,7 +13,7 @@ commonNameColumn = "Common.Name.or.Group"
 orderNewData = function(dataSet, scientificNameColumn, mergedData = combinedData, addNewSpecies = F, commonNameColumn = NA){
   #Make a column with the scientific name for matching
   inScientificNameColumn = which(names(dataSet) == scientificNameColumn)
-  dataSet$DebugNewMatchingName = dataSet[,5]
+  dataSet$DebugNewMatchingName = dataSet[,inScientificNameColumn]
   
   #Clean up that name into the same formatting 
   for(i in 1:length(dataSet$DebugNewMatchingName)){
@@ -65,7 +36,7 @@ orderNewData = function(dataSet, scientificNameColumn, mergedData = combinedData
   for(i in 1:nrow(newData)){
     if(i %in% dataSet$DebugMatchColumn){
       matchedRow = which(dataSet$DebugMatchColumn == i)
-      newData[i,] = dataSet[i,]
+      newData[i,] = dataSet[matchedRow,]
     }
   }
   
@@ -81,6 +52,7 @@ orderNewData = function(dataSet, scientificNameColumn, mergedData = combinedData
     newScientificNameColumn = which(names(newSpeciesData) == scientificNameColumn)
     if(!is.na(commonNameColumn)){
       newCommonNameColumn = which(names(newSpeciesData) == commonNameColumn)
+      if(length(newCommonNameColumn) == 0){stop("Specified Common Name Column not found. Make sure it is spelled correctly, and run the code again.")}
     }else{
       newCommonNameColumn = which(names(newSpeciesData) == "DebugMatchColumn") #This is a column that garuntees that all values will be NA, because if they had a match they wouldn't be new.
     }
@@ -105,16 +77,10 @@ addMainSpecies = function(speciesToAdd = newSpeciesDataset, mergedData = combine
   
   mergedData = rbind(mergedData, newSpeciesDataLong)
   
+  mergedData
 }
 
 # -- Adding column function --
-
-dataSet = manualAnnots
-column = "Assembly_Name"
-mergedData = combinedData
-columnRename = NA
-nameColumn = T
-
 #This function adds a column with the correct order into the merged data.
 #It supports renaming the column, and supports adding "name" columns before the divider. 
 addColumn = function(dataSet, column, columnRename = NA, mergedData = combinedData, nameColumn = F){
@@ -134,7 +100,26 @@ addColumn = function(dataSet, column, columnRename = NA, mergedData = combinedDa
   }
   
   outColumnIndex = which(names(mergedData) == "debugInsertedColumn")
-  names(mergedData)[outColumnIndex] = inColumnName
+  names(mergedData)[outColumnIndex] = outColumnName
   
   mergedData
 }
+
+
+# -- Code to make the starter sheet -- 
+#combinedData = manualAnnots[,c(4,3,4)]
+#names(combinedData) = c("Scientific_Binomial", "CommonName", "ScientificNameFull")
+#combinedData$Scientific_Binomial = gsub(" ", "_", combinedData$Scientific_Binomial)
+#combinedData$Divider = rep("-")
+
+#myVec = "This_is_a_test_vector"
+##This line of code replaces any characters after "<not '_'> + _ + <not '_'>" with blank space
+#sub('^([^_]+_[^_]+).*', '\\1', myVec)
+
+#combinedData$Scientific_Binomial = sub('^([^_]+_[^_]+).*', '\\1', combinedData$Scientific_Binomial)
+#combinedData$Scientific_Binomial = tolower(combinedData$Scientific_Binomial)
+
+#which(combinedData$Scientific_Binomial== "")
+#combinedData = combinedData[-which(combinedData$Scientific_Binomial== ""), ]
+
+##write.csv(combinedData, "Results/MergedDataBase.csv", row.names = F)
