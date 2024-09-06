@@ -46,6 +46,30 @@ manualColumnRenames = NA
 manualNameColumnRenames = NA
 manualColumnsToIgnore =c("Tip_Label..Red.is.included.in.CMU.enhancer.dataset..but.missing.alignment.", "X52") 
 
+#hillerConversionTable
+newDataLocation = "Data/HillerZoonomiaPhenotypeTable.csv"
+newDataScientificNameColumn = "scientific"
+newDataCommonNameColumn = "Common.Name.or.Group"
+addNewSpeciesValue = T 
+attachAllColumns = T 
+nameColumns = c("Zoonomia", "FaName")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+
+#uphamName
+com
+newDataLocation = "Results/UphamNameConversion.csv"
+newDataScientificNameColumn = "scientific"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F
+attachAllColumns = F 
+nameColumns = c("uphamName")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+
+
 
 
 # ---- Main code ---- 
@@ -80,8 +104,10 @@ if(!attachAllColumns){
       combinedData = addColumn(orderedNewData, columnsToAdd[i], columnRename = manualColumnRenames[i])
     }
   }else{
-    for(i in 1:length(columnsToAdd)){
-      combinedData = addColumn(orderedNewData, columnsToAdd[i])
+    if(!is.na(columnsToAdd)){
+      for(i in 1:length(columnsToAdd)){
+        combinedData = addColumn(orderedNewData, columnsToAdd[i])
+      }
     }
   }
   #Name columns 
