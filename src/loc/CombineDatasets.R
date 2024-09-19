@@ -1,5 +1,9 @@
 #This is a script designed to combine multiple datasets. 
 
+#IMPROVEMENTS FOR THIS SCRIPT: 
+# 1) handling of subspecies, but only if two subspecies are actually present in the dataset
+# 2) Updates for newly added species -- At the moment, this only adds columns wholesale, which is not ideal for populating information on newly added species from previously loaded in datasets, especially if manual edits have been made ot the data, meaning regeneration is not an option. 
+
 
 
 # ----- Debug code ----
@@ -73,7 +77,18 @@ manualNameColumnRenames = NA
 newDataLocation = "Results/foleyTipList.csv"
 newDataScientificNameColumn = "Scientific"
 newDataCommonNameColumn = NA
-addNewSpeciesValue = F
+addNewSpeciesValue = T
+attachAllColumns = F 
+nameColumns = c("foleyTip")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+
+#foleyNewSpecies 
+newDataLocation = "Results/foleyTipList.csv"
+newDataScientificNameColumn = "Scientific"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = T
 attachAllColumns = F 
 nameColumns = c("foleyTip")
 manualAddColumns = NA
