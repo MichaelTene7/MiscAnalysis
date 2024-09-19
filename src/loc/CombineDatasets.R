@@ -69,6 +69,18 @@ manualAddColumns = NA
 manualColumnRenames = NA
 manualNameColumnRenames = NA
 
+#foleyName
+newDataLocation = "Results/foleyTipList.csv"
+newDataScientificNameColumn = "Scientific"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F
+attachAllColumns = F 
+nameColumns = c("foleyTip")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+
+
 
 
 
