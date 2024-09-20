@@ -88,3 +88,65 @@ write.tree(newTogaTree, "Output/TogaTree.nwk")
 test = read.tree("Output/TogaTree.nwk")
 
 is.binary(test)
+
+?fastAnc
+
+?char2TreeCategorical
+
+which(!is.na(mergedData$Meyer.Lab.Classification.Clean))
+phenotypedMergedData = mergedData[which(!is.na(mergedData$Meyer.Lab.Classification.Clean)),]
+
+unique(phenotypedMergedData$Meyer.Lab.Classification.Clean)
+args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.txt', 'd=Data/mergedData.csv', 'a=Meyer.Lab.Classification.Clean', 
+         'c=c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")', 
+         'u=list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))', 
+         'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))',
+         'v=T', 't=ER', 'n=Zoonomia')
+
+substitutions = list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))
+mergeOnlys = list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))
+
+
+mergedData = read.csv("Results/MergedData.csv")
+manualAnnots = mergedData
+annotColumn = "Meyer.Lab.Classification.Compressed"
+
+
+if(!is.null(substitutions)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(substitutions)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("Combining", substitutePhenotypes[1], "/", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(mergeOnlys)){                                                    #Consider species with multiple combined categories as the merged category
+  for( i in 1:length(mergeOnlys)){                                           #Eg if [X] is replaced with [Y], [X/Y] becomes [Y]
+    substitutePhenotypes = mergeOnlys[[i]]
+    message(paste("Merging Hybrids of", substitutePhenotypes[1], "/", substitutePhenotypes[2], "to", substitutePhenotypes[2]))
+    entriesWithPhen1 = grep(substitutePhenotypes[1], manualAnnots[[annotColumn]])
+    entriesWithPhen2 = grep(substitutePhenotypes[2], manualAnnots[[annotColumn]])
+    combineEntries = which(entriesWithPhen1 %in% entriesWithPhen2)
+    combineIndexes = entriesWithPhen1[combineEntries]
+    manualAnnots[[annotColumn]][combineIndexes] = substitutePhenotypes[2]
+  }
+}
+
+if(!is.null(substitutions)){
+  for( i in 1:length(substitutions)){
+    substitutePhenotypes = substitutions[[i]]
+    message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
+    phenotypeVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], phenotypeVector)
+  }
+}
+
+
+manualAnnots$Meyer.Lab.Classification.Compressed
+
+mergedData = manualAnnots
+
+mergedData$Meyer.Lab.Classification.Compressed
