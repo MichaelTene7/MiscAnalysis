@@ -1,8 +1,9 @@
 library(RERconverge)
 
+a = b
 nexusTree= read.nexus("Data/UphamDNAOnlyNodeBasedTree.tre")
 
-write.tree(nexusTree, "Data/UphamDNAOnlyNodeBasedTree.nwk")
+#write.tree(nexusTree, "Data/UphamDNAOnlyNodeBasedTree.nwk")
 
 testTree =read.tree("Data/UphamDNAOnlyNodeBasedTree.nwk")
 
@@ -103,6 +104,7 @@ args = c('r=TrueCategoricalRefrenceTree', 'm=data/zoonomiaAllMammalsTrees.txt', 
          'o=list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))',
          'v=T', 't=ER', 'n=Zoonomia')
 
+phenotypeVector = c("Carnivore", "Omnivore", "Herbivore", "Insectivore", "Piscivore", "Generalist", "Planktivore")
 substitutions = list(c("Generalist", "Omnivore"), c("Omnivore-IH", "Omnivore"), c("Omnivore", "_Omnivore"))
 mergeOnlys = list(c("Piscivore", "Carnivore"), c("Planktivore", "Carnivore"), c("Insectivore", "Carnivore"), c("Piscivore", "Insectivore"))
 
@@ -140,13 +142,43 @@ if(!is.null(substitutions)){
   for( i in 1:length(substitutions)){
     substitutePhenotypes = substitutions[[i]]
     message(paste("replacing", substitutePhenotypes[1], "with", substitutePhenotypes[2]))
-    phenotypeVector = gsub(substitutePhenotypes[1], substitutePhenotypes[2], phenotypeVector)
+    
+    manualAnnots[[annotColumn]] = gsub(substitutePhenotypes[1], substitutePhenotypes[2], manualAnnots[[annotColumn]])
   }
 }
+manualAnnots[[annotColumn]] = trimws(manualAnnots[[annotColumn]])               #trim away whitespace to allow for better matching 
+
 
 
 manualAnnots$Meyer.Lab.Classification.Compressed
 
 mergedData = manualAnnots
 
-mergedData$Meyer.Lab.Classification.Compressed
+#write.csv(mergedData, "Results/MergedData.csv")
+
+mergedData = read.csv("Results/MergedData.csv")
+
+phenotypes = unique(mergedData$Meyer.Lab.Classification.Compressed)
+
+phenotypedMergedData = mergedData[mergedData$Meyer.Lab.Classification.Compressed %in% phenotypeVector,]
+
+unique(phenotypedMergedData$Meyer.Lab.Classification.Compressed)
+
+phenotypeMatrix = matrix(nrow = length(phenotypedMergedData$Zoonomia), ncol = length(phenotypeVector)+1)
+phenotypeVectorNew = c("Carnivore", "_Omnivore", "Herbivore", "Insectivore", "Piscivore", "Planktivore")
+
+
+phenotypeDF = data.frame(phenotypedMergedData$Zoonomia)
+for(i in phenotypeVectorNew){
+  message(paste("i = ", i))
+  phenotypeDF$i = rep(0)
+  for(j in 1:nrow(phenotypeDF)){
+    message(j)
+    if(phenotypedMergedData$Meyer.Lab.Classification.Compressed[[j]] == i){
+      phenotypeDF$i[j] = 1
+    }
+  }
+  colnames(phenotypeDF)[ncol(phenotypeDF)] = i 
+}
+
+phenotypeMatrix = as.matrix(phenotypeDF)
