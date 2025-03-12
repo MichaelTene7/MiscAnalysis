@@ -5,7 +5,13 @@ library(dplyr)
 library(gridExtra)
 
 inputFileLocation = "Data/CountsExcel.xlsx"
+outputFileLocation = "Results/competitionPilotLns.csv"
 
+inputFileLocation = "Data/Run2Counts.xlsx"
+outputFileLocation = "Results/competitionRun2Lns.csv"
+outputpngLocation = "Results/YeastRatioPlots.png"
+slopepngLocation = "Results/YeastSlopePlot.png"
+slopeCsvLoaction = "Results/YeastSlopes.csv"
 
 
 day0 = read.xlsx(inputFileLocation, 1) 
@@ -13,7 +19,8 @@ day1 = read.xlsx(inputFileLocation, 2)
 day2 = read.xlsx(inputFileLocation, 3)
 day3 = read.xlsx(inputFileLocation, 4)
 day4 = read.xlsx(inputFileLocation, 5)
-key= read.xlsx(inputFileLocation, 6)
+day5 = read.xlsx(inputFileLocation, 6)
+key= read.xlsx(inputFileLocation, 7)
 
 
 
@@ -22,8 +29,8 @@ combinations = expand.grid(letters = LETTERS[1:8], numbers = 1:12)
 combinations$combo <- paste0(combinations$letters, sprintf("%02d", combinations$numbers))
 sorted_combinations = combinations[order(combinations$letters, combinations$numbers), "combo"]
 
-logValues = data.frame(sorted_combinations, rep(NA, 96),rep(NA, 96), rep(NA, 96), rep(NA, 96), rep(NA, 96), rep(NA, 96), rep(NA, 96))
-names(logValues) = c("well", "info", "version", "day0", "day1", "day2", "day3", "day4")
+logValues = data.frame(sorted_combinations, rep(NA, 96),rep(NA, 96), rep(NA, 96), rep(NA, 96), rep(NA, 96), rep(NA, 96), rep(NA, 96),rep(NA, 96))
+names(logValues) = c("well", "info", "version", "day0", "day1", "day2", "day3", "day4", "day5")
 
 
 logValues$info = key$MediaStrain[match(logValues$well, key$Well)]
@@ -38,12 +45,15 @@ logValues$day1 = day1$ln.E.R.[match(logValues$well, day1$Well)]
 logValues$day2 = day2$ln.E.R.[match(logValues$well, day2$Well)]
 logValues$day3 = day3$ln.E.R.[match(logValues$well, day3$Well)]
 logValues$day4 = day4$ln.E.R.[match(logValues$well, day4$Well)]
+logValues$day5 = day5$ln.E.R.[match(logValues$well, day5$Well)]
+
 logValues
 
-write.csv(logValues, "Results/competitionPilotLns.csv")
+write.csv(logValues, outputFileLocation)
 
 
 
+# -- Code for making the info column for wells with missing data, which would otherwise be completely missing because no column was in the dataset.  not needed if all wells have data -- 
 length(which(is.na(logValues$info)))
 
 startingNALogs = (which(is.na(logValues$info)))
@@ -109,7 +119,7 @@ thrPlot = ggplot(thrData, aes(x = generations, y = value, group = well, color = 
 
 grid.arrange(gluPlot, serPlot, thrPlot, ncol = 3)
 
-png("Results/YeastSlopePlots.png", 1920, 1080)
+png(outputpngLocation, 1920, 1080)
 grid.arrange(gluPlot, serPlot, thrPlot, ncol = 3)
 dev.off()
 
@@ -125,8 +135,20 @@ slopes <- dataLongClean %>%
 View(slopes)
 
 slopes$mediaVersion = dataLong$mediaVersion[match(slopes$well, dataLong$well)]
+slopes$media = dataLong$media[match(slopes$well, dataLong$well)]
+slopes$version = dataLong$version[match(slopes$well, dataLong$well)]
+
 
 palette(c( "red", "green", "purple", "darkgreen", "gray", "yellow", "black", "gold"))
 
+slopeColors = c( "red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange", "red3", "green3", "pink3", "seagreen", "lightgray", "yellow2", "black", "orange3", "red4", "palegreen2", "pink4", "springgreen4", "ivory3", "yellow4", "black", "orange4")
 
-group_by(dataLongClean, well)
+slopeplot = ggplot(slopes, aes(x=mediaVersion, y=slope, group=well, color=mediaVersion))+
+  geom_point()+
+  scale_color_manual(values = slopeColors)
+
+png(slopepngLocation, 1920, 1080)
+slopeplot
+dev.off()
+
+write.csv(slopes, slopeCsvLoaction)
