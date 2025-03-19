@@ -9,9 +9,9 @@ outputFileLocation = "Results/competitionPilotLns.csv"
 
 inputFileLocation = "Data/Run2Counts.xlsx"
 outputFileLocation = "Results/competitionRun2Lns.csv"
-outputpngLocation = "Results/YeastRatioPlots.png"
-slopepngLocation = "Results/YeastSlopePlot.png"
-slopeCsvLoaction = "Results/YeastSlopes.csv"
+outputpngLocation = "Results/YeastRatioPlots2.png"
+slopepngLocation = "Results/YeastSlopePlot2.png"
+slopeCsvLoaction = "Results/YeastSlopes2.csv"
 
 
 day0 = read.xlsx(inputFileLocation, 1) 
@@ -66,7 +66,7 @@ for(i in which(is.na(logValues$info))){ #The targets not refreshing each loop is
 }
 
 
-dataLong <- logValues %>% gather(key = "day", value = "value", day0:day4)
+dataLong <- logValues %>% gather(key = "day", value = "value", day1:day4)
 
 
 dataLong$generations = substr(dataLong$day, 4,4)
@@ -84,7 +84,7 @@ ggplot(data = logValues, aes())
 
 ggplot(dataLong, aes(x = generations, y = value, group = well, color = mediaVersion)) +
   geom_line() +
-  labs(x = "Generations", y = "Value", title = "ln(E/R) over Generations") +
+  labs(x = "Generations", y = "ln(E/R)", title = "") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -93,33 +93,33 @@ palette(colorOrder)
 scale_color_manual(values = colorOrder)
 
 
-gluPlot = ggplot(gluData, aes(x = generations, y = value, group = well, color = mediaVersion)) +
-  geom_line() +
-  labs(x = "Generations", y = "Value", title = "ln(E/R) over Generations") +
+gluPlot = ggplot(gluData, aes(x = generations, y = value, group = well, color = version)) +
+  geom_line(show.legend = F, size=1.5) +
+  labs(x = "Generations", y = "ln(E/R)", title = "Glutamine (control)") +
   theme_minimal() +
-  ylim(-5, 4)+
+  ylim(-3.5, 2)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   scale_color_manual(values = colorOrder)
 
-serPlot = ggplot(serData, aes(x = generations, y = value, group = well, color = mediaVersion)) +
-  geom_line() +
-  labs(x = "Generations", y = "Value", title = "ln(E/R) over Generations") +
+serPlot = ggplot(serData, aes(x = generations, y = value, group = well, color = version)) +
+  geom_line(show.legend = F, size=1.5) +
+  labs(x = "Generations", y = "ln(E/R)", title = "Serine") +
   theme_minimal() +
-  ylim(-5, 4)+
+  ylim(-3.5, 2)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   scale_color_manual(values = colorOrder)
 
-thrPlot = ggplot(thrData, aes(x = generations, y = value, group = well, color = mediaVersion)) +
-  geom_line() +
-  labs(x = "Generations", y = "Value", title = "ln(E/R) over Generations") +
+thrPlot = ggplot(thrData, aes(x = generations, y = value, group = well, color = version)) +
+  geom_line(size=1.5) +
+  labs(x = "Generations", y = "ln(E/R)", title = "Threonine") +
   theme_minimal() +
-  ylim(-5, 4)+
+  ylim(-3.5, 2)+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   scale_color_manual(values = colorOrder)
 
 grid.arrange(gluPlot, serPlot, thrPlot, ncol = 3)
 
-png(outputpngLocation, 1920, 1080)
+png(outputpngLocation, 1920, 540)
 grid.arrange(gluPlot, serPlot, thrPlot, ncol = 3)
 dev.off()
 
@@ -132,7 +132,7 @@ slopes <- dataLongClean %>%
     tibble(slope = coef(model)[2])  # Get the slope (the coefficient for 'day_numeric')
   })
 
-View(slopes)
+#View(slopes)
 
 slopes$mediaVersion = dataLong$mediaVersion[match(slopes$well, dataLong$well)]
 slopes$media = dataLong$media[match(slopes$well, dataLong$well)]
@@ -142,10 +142,14 @@ slopes$version = dataLong$version[match(slopes$well, dataLong$well)]
 palette(c( "red", "green", "purple", "darkgreen", "gray", "yellow", "black", "gold"))
 
 slopeColors = c( "red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange", "red3", "green3", "pink3", "seagreen", "lightgray", "yellow2", "black", "orange3", "red4", "palegreen2", "pink4", "springgreen4", "ivory3", "yellow4", "black", "orange4")
+slopeColors = c( "red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange","red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange","red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange", "red3", "green3", "pink3", "seagreen", "lightgray", "yellow2", "black", "orange3", "red4", "palegreen2", "pink4", "springgreen4", "ivory3", "yellow4", "black", "orange4")
 
-slopeplot = ggplot(slopes, aes(x=mediaVersion, y=slope, group=well, color=mediaVersion))+
-  geom_point()+
-  scale_color_manual(values = slopeColors)
+
+
+slopeplot = ggplot(slopes, aes(x=mediaVersion, y=slope, group=well, color=version))+
+  geom_point(size=5)+
+  scale_color_manual(values = slopeColors)+
+  theme_minimal()
 
 png(slopepngLocation, 1920, 1080)
 slopeplot
