@@ -7,11 +7,6 @@
 
 
 # ----- Debug code ----
-eltonTraits = read.table("Data/MamFuncDat.txt", sep = "\t", header = T)
-newDataset = eltonTraits
-
-dataSet = eltonTraits
-scientificNameColumn = newDataScientificNameColumn
 # ----- 
 
 
@@ -95,6 +90,31 @@ manualAddColumns = NA
 manualColumnRenames = NA
 manualNameColumnRenames = NA
 
+#LalithaAllySpecies 
+newDataLocation = "Results/SpeciesNamesAndPhenosForDE72.csv"
+newDataScientificNameColumn = "InitSpeciesName"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F
+attachAllColumns = T 
+nameColumns = c("UphamTreeName")
+manualAddColumns = c("AlliePheno")
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+manualColumnsToIgnore =c("AlternateID") 
+
+
+#Add manualAnnotations FAname
+newDataLocation = "Results/manualAnnotationsSheet.csv"
+newDataScientificNameColumn = "Species.Name"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F
+attachAllColumns = F
+nameColumns = c("FaName")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = c("manualAnnotations_FaName")
+manualColumnsToIgnore = NA
+
 
 
 
@@ -145,6 +165,8 @@ if(!attachAllColumns){
         stop("The list of name columns to add and renames are not the same length. Makes sure they are, and re-run the script. If you do not want to rename a column, use the columns original name in that postion.")
       }
       usingNameRenames = T
+    }else{
+      usingNameRenames = F
     }
     
     if(usingNameRenames){

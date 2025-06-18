@@ -138,6 +138,18 @@ slopes$mediaVersion = dataLong$mediaVersion[match(slopes$well, dataLong$well)]
 slopes$media = dataLong$media[match(slopes$well, dataLong$well)]
 slopes$version = dataLong$version[match(slopes$well, dataLong$well)]
 
+slopes$mediaVersion = as.factor(slopes$mediaVersion)
+slopes$media = as.factor(slopes$media)
+slopes$version = as.factor(slopes$version)
+
+testFactor = factor(slopes$mediaVersion, levels(slopes$mediaVersion)[c(1,4,2,3,5,6,7,8,9,12,10,11,13,14,15,16,17,20,18,19,21,22,23,24)])
+
+all.equal(testFactor, slopes$mediaVersion)
+
+slopes$mediaVersion = factor(slopes$mediaVersion, levels(slopes$mediaVersion)[c(c(1,4,3,2,5,6,7,8,9,12,11,10,13,14,15,16,17,20,19,18,21,22,23,24))])
+slopes$version = factor(slopes$version, levels(slopes$version)[c(1,4,3,2,5,6,7,8)])
+
+levels(slopes$mediaVersion)
 
 palette(c( "red", "green", "purple", "darkgreen", "gray", "yellow", "black", "gold"))
 
@@ -145,6 +157,7 @@ slopeColors = c( "red", "green", "pink", "darkgreen", "gray", "yellow", "black",
 slopeColors = c( "red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange","red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange","red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange", "red3", "green3", "pink3", "seagreen", "lightgray", "yellow2", "black", "orange3", "red4", "palegreen2", "pink4", "springgreen4", "ivory3", "yellow4", "black", "orange4")
 
 
+slopeColors = c( "red", "green", "pink", "darkgreen", "gray", "yellow", "black", "orange")
 
 slopeplot = ggplot(slopes, aes(x=mediaVersion, y=slope, group=well, color=version))+
   geom_point(size=5)+
