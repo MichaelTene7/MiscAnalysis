@@ -223,6 +223,20 @@ manualColumnsToIgnore = NA
 
 
 
+#panTheria Temperature
+newDataLocation = "Data/combinedPantheria.csv";
+newDataScientificNameColumn = "MSWC_Binomial"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F 
+attachAllColumns = F 
+nameColumns = NA
+manualAddColumns = c("X28.2_Temp_Mean_01degC")
+manualColumnRenames = c("panTheriaTemperature")
+manualNameColumnRenames = NA
+manualColumnsToIgnore = NA
+
+
+
 
 
 
