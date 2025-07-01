@@ -62,7 +62,6 @@ manualColumnRenames = NA
 manualNameColumnRenames = NA
 
 #uphamName
-com
 newDataLocation = "Results/UphamNameConversion.csv"
 newDataScientificNameColumn = "scientific"
 newDataCommonNameColumn = NA
@@ -94,6 +93,116 @@ nameColumns = c("foleyTip")
 manualAddColumns = NA
 manualColumnRenames = NA
 manualNameColumnRenames = NA
+
+# -------
+
+#New Expanded mergedata 
+combinedDataInLocation = "Results/MergedDataNew.csv"; 
+combinedDataOutLocation = "Results/MergedDataNew.csv"
+
+newDataLocation = "Data/HillerZoonomiaPhenotypeTable.csv";
+newDataScientificNameColumn = "scientific";
+newDataCommonNameColumn = "Common.Name.or.Group";
+addNewSpeciesValue = F ;
+attachAllColumns = T ;
+nameColumns = NA;
+manualAddColumns = NA;
+manualColumnRenames = NA;
+manualNameColumnRenames = NA; 
+manualColumnsToIgnore = NA
+
+# Add new Species 
+newDataLocation = "Data/assembly.source.species.csv";
+newDataScientificNameColumn = "SciName";
+addNewSpeciesValue = T ;
+attachAllColumns = F ;
+nameColumns = "ZoonomiaName";
+newDataCommonNameColumn = NA
+
+# Eltontraits
+newDataLocation = "Data/MamFuncDat.csv";
+newDataScientificNameColumn = "Scientific"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F 
+attachAllColumns = T 
+nameColumns = c("MSW3_ID", "MSWFamilyLatin")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+manualColumnsToIgnore = NA
+
+#panTheria
+newDataLocation = "Data/combinedPantheria.csv";
+newDataScientificNameColumn = "MSWC_Binomial"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F 
+attachAllColumns = F 
+nameColumns = c("MSWC_Order", "MSWC_Family", "MSWC_Genus", "MSWC_Species")
+manualAddColumns = c("X6.2_TrophicLevel")
+manualColumnRenames = c("panTheriaTrophicLevel")
+manualNameColumnRenames = NA
+manualColumnsToIgnore = NA
+
+#Hiller Name
+newDataLocation = "Data/HillerZoonomiaPhenotypeTable.csv"
+newDataScientificNameColumn = "scientific"
+attachAllColumns = F
+nameColumns = c("FaName")
+manualAddColumns = NA
+manualColumnRenames = NA
+manualNameColumnRenames = c("HillerName")
+
+
+
+#old Meregdata
+newDataLocation = "Data/mergedDataWithEdits.csv";
+newDataScientificNameColumn = "ScientificNameFull"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F 
+attachAllColumns = F 
+nameColumns = NA
+manualAddColumns = c("Meyer.Diet.Categorical", "Meyer.Lab.Classification",	"Meyer.Lab.Classification.Clean", "Meyer.Lab.Classification.Compressed","Laurasiatheria", "Domestication", "DomesticationBinary", "Echolocation")
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+manualColumnsToIgnore = NA
+
+
+#DerekData 
+newDataLocation = "Results/DerekValues.csv";
+newDataScientificNameColumn = "ScientificNameFull"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F 
+attachAllColumns = F 
+nameColumns = NA
+manualAddColumns = c("Diet.VertTerrestrial",	"Diet.VertAll",	"Diet.AnimalsAll",	"Diet.PlantHighSugar",	"Diet.PlantLowSugar",	"Diet.PlantAll", "Diet_Class")
+manualColumnRenames = NA
+manualNameColumnRenames = NA
+manualColumnsToIgnore = NA
+
+#DerekData 
+newDataLocation = "Results/DerekData90.csv";
+newDataScientificNameColumn = "ScientificNameFull"
+newDataCommonNameColumn = NA
+addNewSpeciesValue = F 
+attachAllColumns = F 
+nameColumns = NA
+manualAddColumns = c("Diet_Class")
+manualColumnRenames = c("DerekDietClassification90")
+manualNameColumnRenames = NA
+manualColumnsToIgnore = NA
+
+
+#DerekData70 
+newDataLocation = "Results/DerekData70.csv";
+newDataScientificNameColumn = "ScientificNameFull"
+manualAddColumns = c("Diet_Class")
+manualColumnRenames = c("DerekDietClassification70")
+
+#DerekData90 
+newDataLocation = "Results/DerekData90.csv";
+newDataScientificNameColumn = "ScientificNameFull"
+manualAddColumns = c("Diet_Class")
+manualColumnRenames = c("DerekDietClassification90")
 
 
 
@@ -131,7 +240,7 @@ if(!attachAllColumns){
       combinedData = addColumn(orderedNewData, columnsToAdd[i], columnRename = manualColumnRenames[i])
     }
   }else{
-    if(!is.na(columnsToAdd)){
+    if(!all(is.na(columnsToAdd))){
       for(i in 1:length(columnsToAdd)){
         combinedData = addColumn(orderedNewData, columnsToAdd[i])
       }
@@ -145,7 +254,7 @@ if(!attachAllColumns){
         stop("The list of name columns to add and renames are not the same length. Makes sure they are, and re-run the script. If you do not want to rename a column, use the columns original name in that postion.")
       }
       usingNameRenames = T
-    }
+    }else{usingNameRenames = F}
     
     if(usingNameRenames){
       for(i in 1:length(nameColumns)){
