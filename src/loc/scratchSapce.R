@@ -1,6 +1,23 @@
 library(RERconverge)
 
+
+
+
 a = b
+
+
+
+# fix pantheria temperature to degrees C 
+
+
+combinedData$panTheriaTemperature = combinedData$panTheriaTemperature/10
+
+combinedData$panTheriaTemperature[which(combinedData$panTheriaTemperature == -99.9)] = NA
+
+
+
+
+
 nexusTree= read.nexus("Data/UphamDNAOnlyNodeBasedTree.tre")
 
 #write.tree(nexusTree, "Data/UphamDNAOnlyNodeBasedTree.nwk")

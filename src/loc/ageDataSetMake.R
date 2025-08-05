@@ -25,6 +25,8 @@ ageTable$pantheriaMaxAge = combinedPantheria$X17.1_MaxLongevity_m[match(ageTable
 ageTable$pantheriaMaxAge[ageTable$pantheriaMaxAge == -999] = NA
 ageTable$pantheriaMaxAge = ageTable$pantheriaMaxAge*30
 ageTable$pantheriaMaxAge
+ageTable$pantheriaBodysize = combinedPantheriaUseful$X5.1_AdultBodyMass_g[match(ageTable$BinomialPretty, combinedPantheriaUseful$MSWC_Binomial)]
+
 
 # Life Histories 
 
@@ -40,6 +42,8 @@ ageTable$lifeHistoriesMaturity = lifeHistoriesUseful$AfrDays[match(ageTable$Bino
 ageTable$lifeHistoryMaxAge = lifeHistories$max..life.mo.[match(ageTable$BinomialPretty, lifeHistories$binomial)]
 ageTable$lifeHistoryMaxAge[ageTable$lifeHistoryMaxAge == -999] = NA
 ageTable$lifeHistoryMaxAge = ageTable$lifeHistoryMaxAge * 30
+ageTable$lifeHistoryBodysize = lifeHistories$mass.g.[match(ageTable$BinomialPretty, lifeHistories$binomial)]
+
 
 cor(ageTable$PantheriaMaturity, ageTable$lifeHistoriesMaturity, use = "complete.obs")
  #This shows that the two measures of maturity are pretty good amtches for eachother. 
@@ -60,6 +64,9 @@ ageTable$anAgeMaturity = anAgeUseful$Female.maturity..days.[match(ageTable$Binom
 
 ageTable$anAgeMaxAge = anAge$Maximum.longevity..yrs.[match(ageTable$BinomialPretty, anAge$binomial)]
 ageTable$anAgeMaxAge = ageTable$anAgeMaxAge * 365
+ageTable$anAgeBodysize = anAge$Adult.weight..g.[match(ageTable$BinomialPretty, anAge$binomial)]
+
+
 
 cor(ageTable$PantheriaMaturity, ageTable$anAgeMaturity, use = "complete.obs")
 cor(ageTable$lifeHistoriesMaturity, ageTable$anAgeMaturity, use = "complete.obs")
@@ -74,7 +81,7 @@ length(which(is.na(ageTable$anAgeMaturity)))
 ageTable$combinedMaturity = ageTable$anAgeMaturity
 length(which(is.na(ageTable$combinedMaturity)))
 
-ageTable$combinedMaturity[is.na(ageTable$combinedMaturity)] = ageTable$lifeHistoriesMaturity[is.na(ageTable$combinedMaturity)]
+ageTable$combinedMaturity[is.na(ageTable$combinedMaturity)] = ageTable$lifeHistoryBodysize[is.na(ageTable$combinedMaturity)]
 length(which(is.na(ageTable$combinedMaturity)))
 
 ageTable$combinedMaturity[is.na(ageTable$combinedMaturity)] = ageTable$PantheriaMaturity[is.na(ageTable$combinedMaturity)]
@@ -82,6 +89,20 @@ length(which(is.na(ageTable$combinedMaturity)))
 
 ageTable$Binomial[which(is.na(ageTable$combinedMaturity))]
 
+# - 
+ageTable$combinedBodysize= ageTable$anAgeBodysize
+length(which(is.na(ageTable$combinedMaturity)))
+
+ageTable$combinedBodysize[is.na(ageTable$combinedBodysize)] = ageTable$lifeHistoriesMaturity[is.na(ageTable$combinedBodysize)]
+length(which(is.na(ageTable$combinedMaturity)))
+
+ageTable$combinedBodysize[is.na(ageTable$combinedBodysize)] = ageTable$pantheriaBodysize[is.na(ageTable$combinedBodysize)]
+length(which(is.na(ageTable$combinedBodysize)))
+
+ageTable$Binomial[which(is.na(ageTable$combinedBodysize))]
+
+
+ageTable$Binomial[which(is.na(ageTable$combinedBodysize))] %in% ageTable$Binomial[which(is.na(ageTable$combinedMaturity))]
 
 #Add maxAge collumn 
 ageTable$MaximumAge = ageTable$anAgeMaxAge
