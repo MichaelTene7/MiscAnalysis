@@ -5,6 +5,14 @@
 # 2) Updates for newly added species -- At the moment, this only adds columns wholesale, which is not ideal for populating information on newly added species from previously loaded in datasets, especially if manual edits have been made ot the data, meaning regeneration is not an option. 
 
 
+# README: 
+# This code combined multiple datasets into a single medgedData spreadsheet. It is suggested that you use a single merdgedData, and simply expand it over time. 
+# This code starts out with a base (default: Results/MergedData.csv) which is added onto using the specified columns in the indata. 
+# To use this, run the defaults like of code, which sets anything you will not need to change, and then run lines of code to specify the changes for each dataset. 
+# These are typically 1) The new InData location, 2) the name of the comlumn holding the scientific name of speices in the new data, 3) attachAll if you want to add the entire dataset // or the names of the columsn you wish to add. 
+# This spreadshseet sorts name columns sperately from data columns. If you want to have a column stored in the "name" section, include the nae of the column in the nameColumns arugment. 
+# This spreadsheet allows you to rename the added columns -- if you wish to, include the new names of the columns (split by name and data columns) in the manualColumnRenames and manualNameColumnRenames arguments. If you do this, the number of the new names must match the number of the added columns.\
+
 
 # ----- Debug code ----
 # ----- 
